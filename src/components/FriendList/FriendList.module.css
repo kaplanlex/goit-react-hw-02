@@ -1,0 +1,21 @@
+.status {
+  font-size: 14px;
+}
+
+.online {
+  color: green;
+}
+
+.offline {
+  color: red;
+}
+
+.friendList{
+  display: flex;
+  gap: 7px;
+}
+li{
+   list-style-type:none;
+   border: 2px solid black;
+   padding: 5px;
+}
