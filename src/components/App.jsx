@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Description from "./Description";
 import Feedback from "./Feedback";
 import Options from "./Options";
+import Notification from "./Notification";
+
 
 const App = () => {
     const [cafe, setCafe] = useState(() => {
@@ -13,15 +15,21 @@ const App = () => {
     });
 
     const updateFeedback = (feedbackType) => {
-        setCafe((cafe) => ({
-            ...cafe,
-            [feedbackType]: cafe[feedbackType] + 1
+        setCafe((prevCafe) => ({
+            ...prevCafe,
+            [feedbackType]: prevCafe[feedbackType] + 1
         }));
+    };
+
+    const resetFeedback = () => {
+        setCafe({ good: 0, neutral: 0, bad: 0 });
     };
 
     const totalFeedback = cafe.good + cafe.neutral + cafe.bad;
     const hasFeedback = totalFeedback > 0;
-    const goodFeedback = Math.round((cafe.good / totalFeedback) * 100);
+    const goodFeedback = hasFeedback
+        ? Math.round((cafe.good / totalFeedback) * 100)
+        : 0;
 
     useEffect(() => {
         window.localStorage.setItem("saved-cafe", JSON.stringify(cafe));
@@ -30,18 +38,19 @@ const App = () => {
     return (
         <>
             <Description />
-            <Options updateFeedback={updateFeedback} />
-
+            <Options
+                updateFeedback={updateFeedback}
+                resetFeedback={resetFeedback}
+                hasFeedback={hasFeedback}
+            />
             {hasFeedback ? (
-                <>
-                    <button onClick={() => setCafe({ good: 0, neutral: 0, bad: 0 })}>Reset</button>
-                    <Feedback cafe={cafe} />
-                    <p>Total: {totalFeedback}</p>
-                    <p>Positiv: {goodFeedback}%</p>
-                </>
-            ) : (
-                    <p>No feedback yet</p>
-                )}
+                <Feedback
+                    cafe={cafe}
+                    totalFeedback={totalFeedback}
+                    goodFeedback={goodFeedback}
+                />
+
+            ) : <Notification />}
         </>
     );
 };
